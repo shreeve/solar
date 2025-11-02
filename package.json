@@ -43,6 +43,7 @@
     "build": "tsc",
     "prebuild": "rm -rf lib/*.js lib/*.d.ts lib/*.map",
     "watch": "tsc --watch",
+    "pack": "npm pack --dry-run",
     "test": "echo 'Test suite not yet configured' && exit 1",
     "prepublishOnly": "npm run build"
   },
