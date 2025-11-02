@@ -1279,7 +1279,13 @@ export default {
 // CLI Interface
 // ==============================================================================
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+// Check if running as CLI (handles symlinks from global install)
+const scriptPath = fileURLToPath(import.meta.url);
+const isRunAsScript = process.argv[1] === scriptPath || 
+                      fs.realpathSync(process.argv[1]) === scriptPath ||
+                      fs.realpathSync(process.argv[1]) === fs.realpathSync(scriptPath);
+
+if (isRunAsScript) {
   (async () => {
     const showHelp = () => {
       console.log(`Solar - SLR(1) Parser Generator
