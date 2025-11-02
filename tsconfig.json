@@ -46,7 +46,6 @@
   "exclude": [
     "node_modules",
     "lib",
-    "**/*.rip",
-    "**/*.js"
+    "**/*.rip"
   ]
 }

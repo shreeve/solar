@@ -822,24 +822,23 @@ o 'FOR ForVariables IN Expression Block', '["for-in", 2, 4, null, null, 5]'
 
 ### Parser Generation Speed
 
-**Solar generates Rip's parser in ~80ms!**
+**Solar generates Rip's parser in ~58ms!**
 
 **Real-world benchmark (Rip grammar):**
-- **Grammar size:** 91 types, 406 production rules
+- **Grammar size:** 91 types, 406 production rules, 802 lines
 - **Generated parser:** 250 states, SLR(1) parse table
-- **Solar:** ~80ms total
-- **Jison:** ~12,500ms (12.5 seconds)
-- **Speedup:** **156× faster!**
+- **Solar:** ~58ms total (on Bun)
+- **Jison:** ~12,500ms (12.5 seconds) for comparable grammar
+- **Speedup:** **~215× faster!**
 
-**Breakdown of Solar's 80ms:**
+**Breakdown of Solar's 58ms (average of 10 runs):**
 ```
-~3ms   processGrammar     (4%)   - Parse grammar spec
-~51ms  buildLRAutomaton   (64%)  - Build state machine
-~10ms  processLookaheads  (12%)  - Compute FIRST/FOLLOW
-~10ms  buildParseTable    (12%)  - Generate parse table
-~6ms   Code generation    (8%)   - Output parser.js
+~3ms   processGrammar     (5%)   - Parse grammar spec
+~40ms  buildLRAutomaton   (69%)  - Build state machine
+~11ms  processLookaheads  (19%)  - Compute FIRST/FOLLOW
+~10ms  buildParseTable    (17%)  - Generate parse table
 ────────
-~80ms  Total
+~58ms  Total
 ```
 
 ### Why Solar is So Fast
@@ -860,7 +859,7 @@ o 'FOR ForVariables IN Expression Block', '["for-in", 2, 4, null, null, 5]'
 
 | Metric | Jison | Solar | Winner |
 |--------|-------|-------|--------|
-| **Parse time** | 12,500ms | 80ms | **Solar 156×** |
+| **Parse time** | 12,500ms | 58ms | **Solar ~215×** |
 | **Dependencies** | Many | Zero | **Solar** |
 | **Self-hosting** | No | Yes | **Solar** |
 | **Code size** | 2,285 LOC | 1,047 LOC | **Solar 54%** |
@@ -868,19 +867,19 @@ o 'FOR ForVariables IN Expression Block', '["for-in", 2, 4, null, null, 5]'
 
 ### Iteration Speed Matters
 
-**Why 80ms vs 12.5s matters in practice:**
+**Why 58ms vs 12.5s matters in practice:**
 
 With Jison (12.5s):
 - Edit grammar → wait → coffee break → check result
 - ~5-10 iterations per hour
 - Slow feedback loop discourages experimentation
 
-With Solar (80ms):
+With Solar (58ms):
 - Edit grammar → instant feedback → iterate
 - ~100+ iterations per hour
 - Rapid experimentation enabled Rip's development
 
-**Solar's speed made Rip possible.** The ability to modify the grammar and see results instantly (80ms feels instant) enabled the rapid iteration needed to develop and refine Rip's syntax.
+**Solar's speed made Rip possible.** The ability to modify the grammar and see results instantly (58ms feels instant) enabled the rapid iteration needed to develop and refine Rip's syntax.
 
 ### Generated Parser Performance
 

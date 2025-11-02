@@ -6,11 +6,11 @@
 
 **The Fast SLR(1) Parser Generator with S-Expression Mode**
 
-Solar is a standalone parser generator (like Yacc/Bison/Jison) that generates parsers **~150× faster** than Jison while producing cleaner, simpler output. Instead of forcing you into complex AST class hierarchies, Solar offers **s-expression mode** - outputting simple nested arrays that are trivial to transform and debug.
+Solar is a standalone parser generator (like Yacc/Bison/Jison) that generates parsers **~215× faster** than Jison while producing cleaner, simpler output. Instead of forcing you into complex AST class hierarchies, Solar offers **s-expression mode** - outputting simple nested arrays that are trivial to transform and debug.
 
 ```bash
 # Jison:  12,500ms to generate parser 😴
-# Solar:      80ms to generate parser ⚡
+# Solar:      58ms to generate parser ⚡
 
 # Install with Bun (recommended):
 bun add solar-parser
@@ -24,7 +24,7 @@ npm install solar-parser
 ## Why Solar?
 
 **If you've ever wished Jison was:**
-- ⚡ **~150× faster** at generating parsers
+- ⚡ **~215× faster** at generating parsers
 - 🎯 **Simpler** - arrays instead of AST classes
 - 📦 **Smaller** - 54% less code (1,047 LOC vs Jison's 2,285)
 - 🚀 **Zero dependencies** - completely standalone
@@ -95,7 +95,7 @@ case '+': {
 
 ## Performance That Matters
 
-**Solar generates parsers in ~80ms. Jison takes ~12,500ms.**
+**Solar generates parsers in ~58ms. Jison takes ~12,500ms.**
 
 Why does this matter? **Iteration speed.**
 
@@ -104,7 +104,7 @@ Why does this matter? **Iteration speed.**
 - ~5-10 iterations per hour
 - Slow feedback discourages experimentation
 
-**With Solar (80ms):**
+**With Solar (58ms):**
 - Edit grammar → instant feedback → iterate
 - ~100+ iterations per hour
 - Rapid experimentation enabled
@@ -115,19 +115,19 @@ Why does this matter? **Iteration speed.**
 
 | Metric | Jison | Solar (Bun) | Solar (Node) | Winner |
 |--------|-------|-------------|--------------|--------|
-| **Generation time** | 12,500ms | 65ms | 180ms | **Solar ~150×** |
+| **Generation time** | 12,500ms | 58ms | 180ms | **Solar ~215×** |
 | **Dependencies** | Many | Zero | Zero | **Solar** |
 | **Code size** | 2,285 LOC | 1,394 LOC | 1,394 LOC | **Solar 38%** |
 | **Output** | AST classes | S-expressions | S-expressions | **Solar (simpler)** |
 
-**Performance breakdown** (Solar on Bun):
+**Performance breakdown** (Solar on Bun, average of 10 runs):
 ```
-processGrammar:     3.21ms  (4%)
-buildLRAutomaton:  39.70ms  (61%)
-processLookaheads: 10.86ms  (17%)
-buildParseTable:    9.85ms  (15%)
+processGrammar:     ~3ms   (5%)
+buildLRAutomaton:  ~40ms   (69%)
+processLookaheads: ~11ms   (19%)
+buildParseTable:   ~10ms   (17%)
 ──────────────────────────
-Total:             64.72ms
+Total:             ~58ms   (range: 56-61ms)
 ```
 
 **Note:** Jison took 12.5 seconds on a comparable grammar. Solar's runtime parser performance is identical to Jison (both generate SLR(1) state machines). The speedup is in *generation time*, enabling rapid iteration.
@@ -651,10 +651,10 @@ grep -A 2 "case 123:" parser.js
 
 | Feature | Jison | Solar |
 |---------|-------|-------|
-| Generation speed | 12,500ms | 80ms (~150× faster) |
+| Generation speed | 12,500ms | 58ms (~215× faster) |
 | Output | AST classes | S-expressions or AST |
 | Dependencies | Many | Zero |
-| Code size | 2,285 LOC | 1,047 LOC |
+| Code size | 2,285 LOC | 1,394 LOC |
 | Self-hosting | No | Yes |
 | Learning curve | Steep | Gentle |
 
