@@ -1004,9 +1004,9 @@ Solar's s-expression mode is a powerful approach for building compilers and inte
 
 ## Learn More
 
-**Package:** `npm install solar-parser` or `bun add solar-parser`  
-**Repository:** https://github.com/shreeve/solar  
-**Examples:** See README.md for complete usage examples  
-**Real-world usage:** The Rip language compiler (https://github.com/shreeve/rip-lang)  
+**Package:** `npm install solar-parser` or `bun add solar-parser`
+**Repository:** https://github.com/shreeve/solar
+**Examples:** See README.md for complete usage examples
+**Real-world usage:** The Rip language compiler (https://github.com/shreeve/rip-lang)
 
 **Questions?** Open an issue on GitHub!
