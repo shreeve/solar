@@ -46,8 +46,6 @@ In your grammar file (JavaScript example):
 ```javascript
 // grammar.js
 export default {
-  mode: 'sexp',  // Enable s-expression output mode
-
   grammar: {
     // Your grammar rules...
   },
@@ -92,8 +90,6 @@ Grammar rules in JavaScript:
 ```javascript
 // grammar.js
 export default {
-  mode: 'sexp',  // or omit for Jison mode
-
   grammar: {
     RuleName: [
       ['TOKEN1 TOKEN2', 'action'],
@@ -497,8 +493,6 @@ Create `grammar.js`:
 ```javascript
 // grammar.js
 export default {
-  mode: 'sexp',  // Enable s-expression mode
-
   grammar: {
     Assignment: [
       ['Assignable = Expression', '["=", 1, 3]'],
@@ -757,7 +751,6 @@ If: [
 
 For using Solar's s-expression mode effectively:
 
-- ✅ Set `mode: 'sexp'` in your grammar
 - ✅ Actions return plain arrays (no metadata needed)
 - ✅ Use string heads for node types (`"if"`, `"def"`, `"+"`, etc.)
 - ✅ Use `null` for optional/missing values
@@ -886,8 +879,6 @@ case '+': {
 ```javascript
 // simple-calc.js
 export default {
-  mode: 'sexp',
-
   grammar: {
     Program: [
       ['Expression', '[1]']

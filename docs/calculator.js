@@ -15,8 +15,6 @@
 // Example output: ["+", "2", ["*", "3", "4"]]
 
 export default {
-  // Use s-expression mode for clean array output
-  mode: 'sexp',
 
   // Grammar rules
   grammar: {

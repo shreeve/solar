@@ -514,26 +514,26 @@ npm install solar-parser
 ```
 
 **What you get:**
-- ✅ Compiled JavaScript (ES2022) - ready to run
-- ✅ TypeScript definitions (.d.ts) - full type safety
-- ✅ Zero build step required
+- ✅ Pure JavaScript (ES2022) - no build step
+- ✅ Single self-contained file (~47KB)
+- ✅ Zero dependencies
 - ✅ Works with Bun, Node.js, and Deno
 - ✅ CLI command included
 
 ### **Source Code**
 
-The TypeScript source code is available in the repository:
+Solar is pure JavaScript with zero dependencies:
 
 ```bash
 # Clone the repo to see the source:
 git clone https://github.com/shreeve/solar
-cd solar/src/
+cd solar/lib/
 
 # File:
-# - solar.ts   (TypeScript source)
+# - solar.js   (Single JavaScript source file)
 ```
 
-**Note:** Solar is compiled from `src/solar.ts` to produce the distributed JavaScript package. The original concept was prototyped in Rip, but the TypeScript version is now the canonical implementation.
+**Note:** Solar is a single, self-contained JavaScript file (~47KB, 1,260 lines). No build step required! The original concept was prototyped in Rip, then implemented in TypeScript, and is now maintained as clean JavaScript for maximum simplicity.
 
 ---
 
@@ -742,12 +742,11 @@ Solar is designed to be clean-room simple:
 
 1. **Repository structure:**
    ```
-   src/
-     solar.ts        # TypeScript source (edit this)
    lib/
-     solar.js        # Compiled output (generated)
-     solar.d.ts      # Type definitions (generated)
+     solar.js        # Source code (edit directly!)
      index.js        # Entry point
+   scripts/
+     sync-version.cjs # Version sync utility
    ```
 
 2. **Development workflow:**
@@ -755,14 +754,16 @@ Solar is designed to be clean-room simple:
    # Clone and setup
    git clone https://github.com/shreeve/solar
    cd solar
-   npm install        # or: bun install
 
-   # Make changes to src/solar.ts
-   npm run build      # Compile TypeScript → lib/
-   npm run watch      # Auto-compile on changes
+   # Make changes
+   vi lib/solar.js    # Edit directly - no build!
 
-   # Test the CLI
-   node lib/solar.js --help
+   # Test immediately
+   bun lib/solar.js --help
+   bun lib/solar.js docs/calculator.js -o test.js
+   
+   # Publish (syncs version automatically)
+   npm publish
    ```
 
 3. **Philosophy:**
@@ -809,7 +810,7 @@ A: Solar is SLR(1). For most languages, this is sufficient. If you need stronger
 A: PEG doesn't handle left recursion naturally. Solar/SLR(1) does.
 
 **Q: Do I need to know Rip?**
-A: No! The npm package is compiled JavaScript (ES2022) with TypeScript definitions. The Rip version is just the reference implementation in the source repository.
+A: No! Solar is pure JavaScript (ES2022). The original concept was prototyped in Rip, but the current implementation is standalone JavaScript.
 
 **Q: Can I output JSON/XML/etc instead of s-expressions?**
 A: Yes! Your grammar actions can return anything. S-expressions are just the recommended approach.

@@ -28,7 +28,6 @@
   "license": "MIT",
   "author": "Steve Shreeve <steve.shreeve@gmail.com>",
   "main": "lib/index.js",
-  "types": "lib/index.d.ts",
   "bin": {
     "solar": "./lib/solar.js"
   },
@@ -41,19 +40,11 @@
   ],
   "scripts": {
     "sync-version": "node scripts/sync-version.cjs",
-    "prebuild": "rm -f lib/solar.js lib/solar.d.ts lib/*.map tsconfig.tsbuildinfo",
-    "build": "tsc",
-    "postbuild": "chmod +x lib/solar.js",
-    "watch": "tsc --watch",
     "pack": "npm pack --dry-run",
     "test": "echo 'Test suite not yet configured' && exit 1",
-    "prepublishOnly": "npm run sync-version && npm run build"
+    "prepublishOnly": "npm run sync-version"
   },
   "engines": {
     "node": ">=16.11.0"
-  },
-  "devDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {}
+  }
 }
