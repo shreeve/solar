@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 
 // Sync version from package.json to lib/solar.js
-const fs = require('fs');
+import { readFileSync, writeFileSync } from 'fs';
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
 const pkg = require('../package.json');
 
 const srcPath = 'lib/solar.js';
-let src = fs.readFileSync(srcPath, 'utf8');
+let src = readFileSync(srcPath, 'utf8');
 
 // Replace VERSION constant
 src = src.replace(/const VERSION = '[^']+';/, `const VERSION = '${pkg.version}';`);
@@ -13,6 +16,5 @@ src = src.replace(/const VERSION = '[^']+';/, `const VERSION = '${pkg.version}';
 // Replace @version in JSDoc
 src = src.replace(/@version [^\n]+/, `@version ${pkg.version}`);
 
-fs.writeFileSync(srcPath, src);
+writeFileSync(srcPath, src);
 console.log(`✅ Synced version to ${pkg.version} in lib/solar.js`);
-
