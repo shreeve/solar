@@ -75,7 +75,7 @@ Generate parser:
 solar calculator.js -o parser.js
 ```
 
-Input: `2 + 3 * 4`  
+Input: `2 + 3 * 4`
 Output: `['+', '2', ['*', '3', '4']]`
 
 ---
@@ -91,7 +91,7 @@ class BinaryOp {
     this.left = left;
     this.right = right;
   }
-  
+
   compile(options) {
     // 50+ lines of compilation logic
     // Complex inheritance hierarchies
@@ -184,14 +184,14 @@ solar --help
 // grammar.js
 export default {
   // S-expression mode is default (no mode field needed!)
-  
+
   grammar: {
     RuleName: [
       ['pattern', 'action'],
       ['another pattern', 'action', { prec: 'OPERATOR' }]
     ]
   },
-  
+
   operators: [
     ['left', '+', '-'],
     ['left', '*', '/']
@@ -326,12 +326,12 @@ class MyLexer {
     this.input = input;
     // Initialize lexer state
   }
-  
+
   lex() {
     // Return token name (string) or EOF (1)
     return 'NUMBER';
   }
-  
+
   // Required properties:
   // - yytext: matched text
   // - yyleng: match length
@@ -529,7 +529,7 @@ export default {
     Program: [
       ['Expression', '[1]']
     ],
-    
+
     Expression: [
       ['NUMBER'],
       ['Expression + Expression', '["+", 1, 3]'],
@@ -540,7 +540,7 @@ export default {
       ['- Expression', '["-", 2]', { prec: 'UMINUS' }]
     ]
   },
-  
+
   operators: [
     ['left', '+', '-'],
     ['left', '*', '/'],
@@ -567,10 +567,10 @@ solar --info calculator.js
 ```javascript
 function evaluate(sexpr) {
   if (typeof sexpr === 'string') return parseFloat(sexpr);
-  
+
   const [op, ...args] = sexpr;
   const values = args.map(evaluate);
-  
+
   switch (op) {
     case '+': return values[0] + values[1];
     case '-': return values[0] - values[1];
@@ -669,7 +669,7 @@ Your lexer can attach metadata to tokens, which Solar preserves:
 token.quote = '"';        // Preserve quote style
 token.double = true;
 
-// Number tokens  
+// Number tokens
 token.parsedValue = 42;   // Pre-parsed value
 
 // All tokens
@@ -838,28 +838,28 @@ npm publish
 
 ## FAQ
 
-**Q: Is Solar production-ready?**  
+**Q: Is Solar production-ready?**
 A: Yes. Battle-tested in the Rip compiler (864/864 tests passing).
 
-**Q: Can I use my existing Jison grammar?**  
+**Q: Can I use my existing Jison grammar?**
 A: Yes! Use `bnf` instead of `grammar` in your spec.
 
-**Q: What about LR(1) or LALR(1)?**  
+**Q: What about LR(1) or LALR(1)?**
 A: Solar is SLR(1). Sufficient for most languages. Need stronger? Use Jison.
 
-**Q: Why not PEG?**  
+**Q: Why not PEG?**
 A: PEG doesn't handle left recursion naturally. SLR(1) does.
 
-**Q: Can I output JSON/XML/etc instead of s-expressions?**  
+**Q: Can I output JSON/XML/etc instead of s-expressions?**
 A: Yes! Your actions can return anything. S-expressions are just recommended.
 
-**Q: How do I handle errors?**  
+**Q: How do I handle errors?**
 A: Override `parser.yy.parseError()` for custom error handling.
 
-**Q: Does it work with TypeScript?**  
+**Q: Does it work with TypeScript?**
 A: Solar is pure JavaScript, but you can write grammars in .ts files (they're imported dynamically).
 
-**Q: Why one file instead of modules?**  
+**Q: Why one file instead of modules?**
 A: Simplicity. One file is easier to understand, debug, and distribute.
 
 ---
@@ -904,4 +904,3 @@ MIT
 **Start simple. Build incrementally. Ship elegantly.** ✨
 
 **Try Solar today and rediscover the joy of fast iteration.**
-
