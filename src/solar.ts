@@ -1254,32 +1254,33 @@ export default parser
 }
 
 // ==============================================================================
-// Exports
-// ==============================================================================
-
-// ==============================================================================
 // S-Expression Pretty Printer
 // ==============================================================================
 
-const INLINE_FORMS = new Set([
-  '+', '-', '*', '/', '\\', '#', '**', '_',       // Binary operators
-  '=', '<', '>', '[', ']', ']]', '!', '&', '?',   // Comparison & logical
-  '\'', 'not',                                    // Unary NOT, negated compare
-  'var', 'num', 'str', 'global', 'naked-global',  // Atoms and variables
-  'tag', 'entryref', 'assign', 'pass-by-ref',     // References and assignment
-]);
-
 /**
  * Determine if an array should be formatted inline (single line)
+ * @param arr - Array to check
+ * @param inlineForms - Optional set of forms that should be inline
  */
-function isInline(arr: any[]): boolean {
+function isInline(arr: any[], inlineForms?: Set<string>): boolean {
   if (!Array.isArray(arr) || arr.length === 0) return false;
 
-  const head = arr[0]?.valueOf?.() ?? arr[0];
-  if (INLINE_FORMS.has(head)) return true;
+  // Check if head is in inline forms set
+  if (inlineForms) {
+    const head = arr[0]?.valueOf?.() ?? arr[0];
+    if (typeof head === 'string' && inlineForms.has(head)) return true;
+  }
 
-  // Small arrays without nesting can be inline
-  return arr.length <= 4 && !arr.some(Array.isArray);
+  // Very small arrays can be inline
+  if (arr.length <= 2 && !arr.some(Array.isArray)) return true;
+
+  // Arrays with 3-4 simple atoms (no nested arrays or objects) can be inline
+  if (arr.length <= 4) {
+    const hasNesting = arr.some(elem => Array.isArray(elem) || (typeof elem === 'object' && elem !== null));
+    if (!hasNesting) return true;
+  }
+
+  return false;
 }
 
 /**
@@ -1297,13 +1298,16 @@ function formatAtom(elem: any): string {
 
 /**
  * Convert S-expression to formatted string
+ * @param arr - S-expression array
+ * @param indent - Current indentation level
+ * @param inlineForms - Optional set of forms that should be inline
  */
-function toSexpr(arr: any, indent = 0): string {
+function toSexpr(arr: any, indent = 0, inlineForms?: Set<string>): string {
   if (!Array.isArray(arr)) return formatAtom(arr);
 
   // Inline format: (op arg1 arg2)
-  if (isInline(arr)) {
-    const parts = arr.map((elem: any) => Array.isArray(elem) ? toSexpr(elem) : formatAtom(elem));
+  if (isInline(arr, inlineForms)) {
+    const parts = arr.map((elem: any) => Array.isArray(elem) ? toSexpr(elem, 0, inlineForms) : formatAtom(elem));
     return `(${parts.join(' ')})`;
   }
 
@@ -1311,15 +1315,15 @@ function toSexpr(arr: any, indent = 0): string {
   const lines: string[] = [];
 
   // Format head
-  const head = Array.isArray(arr[0]) ? toSexpr(arr[0]) : formatAtom(arr[0]);
+  const head = Array.isArray(arr[0]) ? toSexpr(arr[0], 0, inlineForms) : formatAtom(arr[0]);
   lines.push(`${spaces}(${head}`);
 
   // Format remaining elements
   for (let i = 1; i < arr.length; i++) {
     const elem = arr[i];
     if (Array.isArray(elem)) {
-      const formatted = toSexpr(elem, indent + 2);
-      if (isInline(elem)) {
+      const formatted = toSexpr(elem, indent + 2, inlineForms);
+      if (isInline(elem, inlineForms)) {
         lines[lines.length - 1] += ` ${formatted}`;
       } else {
         lines.push(formatted);
@@ -1336,10 +1340,26 @@ function toSexpr(arr: any, indent = 0): string {
 /**
  * Pretty-print S-expression
  * @param sexp - S-expression array from parser
+ * @param grammar - Optional grammar to extract inline forms from
  * @returns Formatted string representation
  */
-export function prettyPrint(sexp: any): string {
-  return toSexpr(sexp, 0);
+export function prettyPrint(sexp: any, grammar?: any): string {
+  let inlineForms: Set<string> | undefined;
+  
+  // Extract operators from grammar if provided
+  if (grammar?.operators) {
+    inlineForms = new Set<string>();
+    for (const opGroup of grammar.operators) {
+      if (Array.isArray(opGroup)) {
+        // Skip first element (associativity: 'left', 'right', 'nonassoc')
+        for (let i = 1; i < opGroup.length; i++) {
+          inlineForms.add(opGroup[i]);
+        }
+      }
+    }
+  }
+  
+  return toSexpr(sexp, 0, inlineForms);
 }
 
 // ==============================================================================
@@ -1497,31 +1517,37 @@ Examples:
       if (options.sexpr) {
         console.log('\nGrammar S-Expression:\n');
         
-        // Convert grammar object to s-expression format
-        const grammarSexp: any[] = ['grammar'];
+        // Build s-expression structure
+        const parts: string[] = ['(grammar'];
         
         if (grammar.mode) {
-          grammarSexp.push(['mode', grammar.mode]);
+          parts.push(`  (mode ${grammar.mode})`);
         }
         
         if (grammar.grammar) {
-          const rulesSexp: any[] = ['rules'];
+          parts.push('  (rules');
           for (const [name, productions] of Object.entries(grammar.grammar)) {
-            const ruleSexp: any[] = [name];
+            parts.push(`    (${name}`);
             for (const prod of productions as any[]) {
-              ruleSexp.push(prod);
+              const prodStr = JSON.stringify(prod);
+              parts.push(`      ${prodStr}`);
             }
-            rulesSexp.push(ruleSexp);
+            parts.push(`    )`);
           }
-          grammarSexp.push(rulesSexp);
+          parts.push('  )');
         }
         
         if (grammar.operators && grammar.operators.length > 0) {
-          const opsSexp: any[] = ['operators', ...grammar.operators];
-          grammarSexp.push(opsSexp);
+          parts.push('  (operators');
+          for (const op of grammar.operators) {
+            const opStr = Array.isArray(op) ? `(${op.join(' ')})` : String(op);
+            parts.push(`    ${opStr}`);
+          }
+          parts.push('  )');
         }
         
-        console.log(prettyPrint(grammarSexp));
+        parts.push(')');
+        console.log(parts.join('\n'));
         return;
       }
 
