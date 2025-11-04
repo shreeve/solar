@@ -1493,10 +1493,35 @@ Examples:
         throw new Error("Failed to load grammar");
       }
 
-      // Show grammar structure
+      // Show grammar as s-expression
       if (options.sexpr) {
-        console.log('\nGrammar Structure:');
-        console.log(JSON.stringify(grammar, null, 2));
+        console.log('\nGrammar S-Expression:\n');
+        
+        // Convert grammar object to s-expression format
+        const grammarSexp: any[] = ['grammar'];
+        
+        if (grammar.mode) {
+          grammarSexp.push(['mode', grammar.mode]);
+        }
+        
+        if (grammar.grammar) {
+          const rulesSexp: any[] = ['rules'];
+          for (const [name, productions] of Object.entries(grammar.grammar)) {
+            const ruleSexp: any[] = [name];
+            for (const prod of productions as any[]) {
+              ruleSexp.push(prod);
+            }
+            rulesSexp.push(ruleSexp);
+          }
+          grammarSexp.push(rulesSexp);
+        }
+        
+        if (grammar.operators && grammar.operators.length > 0) {
+          const opsSexp: any[] = ['operators', ...grammar.operators];
+          grammarSexp.push(opsSexp);
+        }
+        
+        console.log(prettyPrint(grammarSexp));
         return;
       }
 
