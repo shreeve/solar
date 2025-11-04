@@ -35,7 +35,6 @@
     "lib/",
     "docs/",
     "README.md",
-    "REFERENCE.md",
     "LICENSE"
   ],
   "engines": {
