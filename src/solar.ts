@@ -1258,6 +1258,8 @@ export default parser
 // ==============================================================================
 
 /**
+ * 
+ * 
  * Determine if an array should be formatted inline (single line)
  * @param arr - Array to check
  * @param inlineForms - Optional set of forms that should be inline
@@ -1345,7 +1347,7 @@ function toSexpr(arr: any, indent = 0, inlineForms?: Set<string>): string {
  */
 export function prettyPrint(sexp: any, grammar?: any): string {
   let inlineForms: Set<string> | undefined;
-  
+
   // Extract operators from grammar if provided
   if (grammar?.operators) {
     inlineForms = new Set<string>();
@@ -1358,7 +1360,7 @@ export function prettyPrint(sexp: any, grammar?: any): string {
       }
     }
   }
-  
+
   return toSexpr(sexp, 0, inlineForms);
 }
 
@@ -1515,15 +1517,13 @@ Examples:
 
       // Show grammar as s-expression
       if (options.sexpr) {
-        console.log('\nGrammar S-Expression:\n');
-        
         // Build s-expression structure
         const parts: string[] = ['(grammar'];
-        
+
         if (grammar.mode) {
           parts.push(`  (mode ${grammar.mode})`);
         }
-        
+
         if (grammar.grammar) {
           parts.push('  (rules');
           for (const [name, productions] of Object.entries(grammar.grammar)) {
@@ -1536,7 +1536,7 @@ Examples:
           }
           parts.push('  )');
         }
-        
+
         if (grammar.operators && grammar.operators.length > 0) {
           parts.push('  (operators');
           for (const op of grammar.operators) {
@@ -1545,7 +1545,7 @@ Examples:
           }
           parts.push('  )');
         }
-        
+
         parts.push(')');
         console.log(parts.join('\n'));
         return;
