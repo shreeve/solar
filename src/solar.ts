@@ -391,18 +391,14 @@ class Generator {
     if (Array.isArray(handle)) {
       let symbols: string[];
       if (typeof handle[0] === 'string') {
-        symbols = handle[0].trim().split(' ');
+        symbols = handle[0].trim().split(/\s+/);
       } else {
         symbols = [...handle[0]];
       }
       symbols = symbols.map(e => e.replace(/\[[a-zA-Z_][a-zA-Z0-9_-]*\]/g, ''));
 
-      const action = (typeof handle[1] === 'string' || handle.length === 3)
-        ? handle[1]
-        : null;
-      const precedence = handle[2]
-        ? handle[2]
-        : (handle[1] && typeof handle[1] !== 'string' ? handle[1] : null);
+      const action = handle[1] ?? 1;
+      const precedence = handle[2] ?? null;
 
       return [symbols, action, precedence];
     } else {
@@ -462,33 +458,30 @@ class Generator {
 
       for (let i = 0; i < symbols.length; i++) {
         const token = symbols[i];
-        const match = token.match(/\[[a-zA-Z][a-zA-Z0-9_-]*\]/);
-        const symbolsI = match ? match[0].slice(1, -1) : token;
 
-        if (names[symbolsI]) {
-          names[symbolsI + (++count[symbolsI])] = i + 1;
+        // Allow for ['Expr[left] OPERATOR Expr[right]', '$left + $right']
+        const match = token.match(/\[[a-zA-Z][a-zA-Z0-9_-]*\]/);
+        const remap = match ? match[0].slice(1, -1) : token;
+        if (names[remap]) {
+          names[remap + (++count[remap])] = i + 1;
         } else {
-          names[symbolsI] = i + 1;
-          names[symbolsI + "1"] = i + 1;
-          count[symbolsI] = 1;
+          names[remap] = i + 1;
+          names[remap + "1"] = i + 1;
+          count[remap] = 1;
         }
       }
 
       action = action
-        .replace(/\$([a-zA-Z][a-zA-Z0-9_]*)/g, (str, pl) =>
-          names[pl] ? '$' + names[pl] : str)
-        .replace(/@([a-zA-Z][a-zA-Z0-9_]*)/g, (str, pl) =>
-          names[pl] ? '@' + names[pl] : str);
+        .replace(/\$([a-zA-Z][a-zA-Z0-9_]*)/g, (str, pl) => names[pl] ? '$' + names[pl] : str)
+        .replace( /@([a-zA-Z][a-zA-Z0-9_]*)/g, (str, pl) => names[pl] ? '@' + names[pl] : str);
     }
 
     // Transform $$ and positional references
     return action
       .replace(/([^'"])\$\$|^\$\$/g, '$1this.$')
       .replace(/@[0$]/g, "this._$")
-      .replace(/\$(-?\d+)/g, (_, n) =>
-        `$$[$0${parseInt(n, 10) - symbols.length || ''}]`)
-      .replace(/@(-?\d+)/g, (_, n) =>
-        `_$[$0${parseInt(n, 10) - symbols.length || ''}]`);
+      .replace(/\$(-?\d+)/g, (_, n) => `$$[$0${parseInt(n, 10) - symbols.length || ''}]`)
+      .replace( /@(-?\d+)/g, (_, n) => `_$[$0${parseInt(n, 10) - symbols.length || ''}]`);
   }
 
   private _assignPrecedence(rule: Rule, precedence: any): void {
