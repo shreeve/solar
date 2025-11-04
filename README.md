@@ -760,7 +760,7 @@ Solar is designed to be clean-room simple:
    # Test immediately
    bun lib/solar.js --help
    bun lib/solar.js docs/calculator.js -o test.js
-   
+
    # To publish:
    # 1. Update version in package.json
    # 2. Update VERSION constant in lib/solar.js (line 24)
