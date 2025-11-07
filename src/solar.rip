@@ -865,7 +865,6 @@ if isRunAsScript
   do ->
     showVersion = ->
       console.log """
-
       Solar #{VERSION} - SLR(1) Parser Generator
       """
 
